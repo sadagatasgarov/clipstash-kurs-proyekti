@@ -1,7 +1,6 @@
 use super::super::ClipError;
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Content(String);
 
@@ -22,4 +21,3 @@ impl Content {
         self.0.as_str()
     }
 }
-
