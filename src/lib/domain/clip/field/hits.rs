@@ -1,4 +1,3 @@
-use super::super::ClipError;
 use derive_more::Constructor;
 use serde::{Deserialize, Serialize};
 
