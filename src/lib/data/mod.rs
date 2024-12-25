@@ -18,7 +18,26 @@ pub type Transaction<'t> = sqlx::Transaction<'t, Sqlite>;
 pub type AppDatabaseRow = SqliteRow;
 pub type AppQueryResult = SqliteQueryResult;
 
+pub struct Database<D: sqlx::Database>(sqlx::Pool<D>);
 
+impl Database<Sqlite> {
+    pub async fn new(connection_str: &str) -> Self{
+        let pool = sqlx::sqlite::SqlitePoolOptions::new()
+        .connect(connection_str).await;
+        match pool {
+            Ok(pool) => Self(pool),
+            Err(e) =>{ 
+                eprintln!("{}\n", e);
+                eprintln!("If the database has not yet been created, run: \n $ sqlx database setup\n");
+                panic!("Databaze connection error");
+        }
+        }
+    }
+
+    pub fn get_pool(&self) -> &DatabasePool {
+        &self.0
+    }
+}
 
 
 #[derive(Debug, Clone, From, Display, Deserialize, Serialize)]
