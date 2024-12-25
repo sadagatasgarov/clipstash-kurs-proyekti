@@ -38,7 +38,8 @@ impl TryFrom<Clip> for crate::domain::Clip {
     }
 }
 
-
-
+pub struct GetClip {
+    pub(in crate::data) shortcode: String,
+}
 
 

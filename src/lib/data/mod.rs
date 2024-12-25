@@ -1,5 +1,5 @@
 pub mod model;
-
+pub mod query;
 use derive_more::{Display, From};
 use serde::{Deserialize, Serialize};
 use sqlx::{sqlite::{SqliteQueryResult, SqliteRow}, Sqlite, SqlitePool};
