@@ -1,5 +1,5 @@
-pub mod ask;
 pub mod action;
+pub mod ask;
 
 use crate::{ClipError, DataError};
 
@@ -12,25 +12,25 @@ pub enum ServiceError {
     #[error("not found")]
     NotFound,
     #[error("permission not met: {0}")]
-    PermissionError(String)
+    PermissionError(String),
 }
 
 impl From<DataError> for ServiceError {
     fn from(err: DataError) -> Self {
         match err {
-            DataError::Database(d) =>match  d {
+            DataError::Database(d) => match d {
                 sqlx::Error::RowNotFound => Self::NotFound,
-                other => Self::Data(DataError::Database(other))
+                other => Self::Data(DataError::Database(other)),
             },
         }
     }
 }
 
-impl  From<sqlx::Error> for ServiceError {
+impl From<sqlx::Error> for ServiceError {
     fn from(err: sqlx::Error) -> Self {
         match err {
             sqlx::Error::RowNotFound => Self::NotFound,
-            other => Self::Data(DataError::Database(other))
+            other => Self::Data(DataError::Database(other)),
         }
     }
 }

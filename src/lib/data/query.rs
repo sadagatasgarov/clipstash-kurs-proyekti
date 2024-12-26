@@ -3,25 +3,26 @@ use crate::data::{DataError, DatabasePool};
 use crate::ShortCode;
 use sqlx::Row;
 
-
 type Result<T> = std::result::Result<T, DataError>;
 
 pub async fn get_clip<M: Into<model::GetClip>>(
     model: M,
-    pool: &DatabasePool
-) -> Result<model::Clip>   {
+    pool: &DatabasePool,
+) -> Result<model::Clip> {
     let model = model.into();
     let shortcode = model.shortcode.as_str();
     Ok(sqlx::query_as!(
         model::Clip,
         "SELECT * FROM clips Where shortcode = ?",
         shortcode
-    ).fetch_one(pool).await?)   
+    )
+    .fetch_one(pool)
+    .await?)
 }
 
-pub async fn new_clip<M:Into<model::NewClip>>(
-    model:M,
-    pool: &DatabasePool
+pub async fn new_clip<M: Into<model::NewClip>>(
+    model: M,
+    pool: &DatabasePool,
 ) -> Result<model::Clip> {
     let model = model.into();
     let _ = sqlx::query!(
@@ -43,29 +44,32 @@ pub async fn new_clip<M:Into<model::NewClip>>(
         model.expires,
         model.password,
         0
-    ).execute(pool).await?;
+    )
+    .execute(pool)
+    .await?;
 
     get_clip(model.shortcode, pool).await
 }
 
-
-pub async fn update_clip<M:Into<model::UpdateClip>>(
+pub async fn update_clip<M: Into<model::UpdateClip>>(
     model: M,
-    pool: &DatabasePool
+    pool: &DatabasePool,
 ) -> Result<model::Clip> {
     let model = model.into();
-        let _ = sqlx::query!(
-            r#"UPDATE clips SET
+    let _ = sqlx::query!(
+        r#"UPDATE clips SET
                 content = ?,
                 expires = ?,
                 password = ?,
                 title = ?
                WHERE shortcode = ?"#,
-            model.content,
-            model.expires,
-            model.password,
-            model.title,
-            model.shortcode
-        ).execute(pool).await?;
-        get_clip(model.shortcode, pool).await
+        model.content,
+        model.expires,
+        model.password,
+        model.title,
+        model.shortcode
+    )
+    .execute(pool)
+    .await?;
+    get_clip(model.shortcode, pool).await
 }

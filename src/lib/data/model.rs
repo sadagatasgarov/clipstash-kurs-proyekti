@@ -3,8 +3,6 @@ use crate::{ClipError, ShortCode, Time};
 use chrono::{NaiveDateTime, Utc};
 use std::convert::{TryFrom, TryInto};
 
-
-
 #[derive(Debug, sqlx::FromRow)]
 pub struct Clip {
     pub(in crate::data) clip_id: String,
@@ -16,7 +14,6 @@ pub struct Clip {
     pub(in crate::data) password: Option<String>,
     pub(in crate::data) hits: i64,
 }
-
 
 impl TryFrom<Clip> for crate::domain::Clip {
     type Error = ClipError;
@@ -34,7 +31,6 @@ impl TryFrom<Clip> for crate::domain::Clip {
             password: field::Password::new(clip.password.unwrap_or_default())?,
             hits: field::Hits::new(u64::try_from(clip.hits)?),
         })
-
     }
 }
 
@@ -44,25 +40,25 @@ pub struct GetClip {
 
 impl From<crate::service::ask::GetClip> for GetClip {
     fn from(req: crate::service::ask::GetClip) -> Self {
-        Self { shortcode: req.shortcode.into_inner() }
+        Self {
+            shortcode: req.shortcode.into_inner(),
+        }
     }
 }
 
 impl From<ShortCode> for GetClip {
     fn from(shortcode: ShortCode) -> Self {
-        Self { shortcode: shortcode.into_inner() }
-    }
-}
-
-
-impl From<String> for GetClip {
-    fn from(shortcode: String) -> Self {
-        Self{
-            shortcode
+        Self {
+            shortcode: shortcode.into_inner(),
         }
     }
 }
 
+impl From<String> for GetClip {
+    fn from(shortcode: String) -> Self {
+        Self { shortcode }
+    }
+}
 
 pub struct NewClip {
     pub(in crate::data) clip_id: String,
@@ -78,9 +74,9 @@ impl From<crate::service::ask::NewClip> for NewClip {
     fn from(req: crate::service::ask::NewClip) -> Self {
         Self {
             clip_id: DbId::new().into(),
-            content: req.content.into_inner(), 
-            title: req.title.into_inner(), 
-            expires: req.expires.into_inner().map(|time|time.timestapm()),
+            content: req.content.into_inner(),
+            title: req.title.into_inner(),
+            expires: req.expires.into_inner().map(|time| time.timestapm()),
             password: req.password.into_inner(),
             shortcode: ShortCode::default().into(),
             posted: Utc::now().timestamp(),
@@ -98,10 +94,10 @@ pub struct UpdateClip {
 
 impl From<crate::service::ask::UpdateClip> for UpdateClip {
     fn from(req: crate::service::ask::UpdateClip) -> Self {
-        Self{
-            content: req.content.into_inner(), 
-            title: req.title.into_inner(), 
-            expires: req.expires.into_inner().map(|time|time.timestapm()),
+        Self {
+            content: req.content.into_inner(),
+            title: req.title.into_inner(),
+            expires: req.expires.into_inner().map(|time| time.timestapm()),
             password: req.password.into_inner(),
             shortcode: ShortCode::default().into(),
         }

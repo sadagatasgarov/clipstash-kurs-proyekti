@@ -2,16 +2,18 @@ pub mod model;
 pub mod query;
 use derive_more::{Display, From};
 use serde::{Deserialize, Serialize};
-use sqlx::{sqlite::{SqliteQueryResult, SqliteRow}, Sqlite, SqlitePool};
-use thiserror::Error;
+use sqlx::{
+    sqlite::{SqliteQueryResult, SqliteRow},
+    Sqlite, SqlitePool,
+};
 use std::{process::id, str::FromStr};
+use thiserror::Error;
 use uuid::Uuid;
 
-
 #[derive(Debug, Error)]
-pub enum DataError{
+pub enum DataError {
     #[error("database error: {0}")]
-    Database(#[from] sqlx::Error)
+    Database(#[from] sqlx::Error),
 }
 
 pub type AppDatabase = Database<Sqlite>;
@@ -23,16 +25,19 @@ pub type AppQueryResult = SqliteQueryResult;
 pub struct Database<D: sqlx::Database>(sqlx::Pool<D>);
 
 impl Database<Sqlite> {
-    pub async fn new(connection_str: &str) -> Self{
+    pub async fn new(connection_str: &str) -> Self {
         let pool = sqlx::sqlite::SqlitePoolOptions::new()
-        .connect(connection_str).await;
+            .connect(connection_str)
+            .await;
         match pool {
             Ok(pool) => Self(pool),
-            Err(e) =>{ 
+            Err(e) => {
                 eprintln!("{}\n", e);
-                eprintln!("If the database has not yet been created, run: \n $ sqlx database setup\n");
+                eprintln!(
+                    "If the database has not yet been created, run: \n $ sqlx database setup\n"
+                );
                 panic!("Databaze connection error");
-        }
+            }
         }
     }
 
@@ -40,7 +45,6 @@ impl Database<Sqlite> {
         &self.0
     }
 }
-
 
 #[derive(Debug, Clone, From, Display, Deserialize, Serialize)]
 pub struct DbId(Uuid);
@@ -70,7 +74,7 @@ impl FromStr for DbId {
 }
 
 impl From<DbId> for String {
-   fn from(id: DbId) -> Self {
-       format!("{}", id.0)
-   }
+    fn from(id: DbId) -> Self {
+        format!("{}", id.0)
+    }
 }
