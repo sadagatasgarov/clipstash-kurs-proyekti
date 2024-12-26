@@ -10,3 +10,4 @@ CREATE TABLE IF NOT EXISTS clips
     password  TEXT,
     hits      BIGINT NOT NULL
 );
+
