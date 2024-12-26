@@ -4,7 +4,7 @@ use derive_more::{Display, From};
 use serde::{Deserialize, Serialize};
 use sqlx::{sqlite::{SqliteQueryResult, SqliteRow}, Sqlite, SqlitePool};
 use thiserror::Error;
-use std::str::FromStr;
+use std::{process::id, str::FromStr};
 use uuid::Uuid;
 
 
@@ -67,4 +67,10 @@ impl FromStr for DbId {
     fn from_str(id: &str) -> Result<Self, Self::Err> {
         Ok(DbId(Uuid::parse_str(id)?))
     }
+}
+
+impl From<DbId> for String {
+   fn from(id: DbId) -> Self {
+       format!("{}", id.0)
+   }
 }
