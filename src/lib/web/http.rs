@@ -1,15 +1,13 @@
 use std::fmt::Debug;
 
 use crate::data::AppDatabase;
-use crate::service;
 use crate::service::action;
-use crate::web::{ctx, form, renderer::Renderer, PageError};
+use crate::web::{ctx, renderer::Renderer, PageError};
 use crate::{ServiceError, ShortCode};
 
-use rocket::form::{Contextual, Form};
-use rocket::http::{Cookie, CookieJar, Status};
-use rocket::response::{content::RawHtml, status, Redirect};
-use rocket::{uri, State};
+use rocket::http::Status;
+use rocket::response::{content::RawHtml, status};
+use rocket::State;
 
 
 #[rocket::get("/")]

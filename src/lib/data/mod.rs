@@ -6,7 +6,7 @@ use sqlx::{
     sqlite::{SqliteQueryResult, SqliteRow},
     Sqlite, SqlitePool,
 };
-use std::{process::id, str::FromStr};
+use std::str::FromStr;
 use thiserror::Error;
 use uuid::Uuid;
 

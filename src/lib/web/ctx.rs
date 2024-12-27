@@ -1,5 +1,5 @@
 use derive_more::Constructor;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 pub trait PageContext {
     fn title(&self) -> &str;
