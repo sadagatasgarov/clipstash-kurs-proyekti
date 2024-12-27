@@ -31,13 +31,13 @@ pub mod catcher {
         "something went wrong"
     }
 
-    #[catch(default)]
+    #[catch(500)]
     fn internal_error(req: &Request) -> &'static str {
         eprintln!("internel error: {:?}", req);
         "Internel server error"
     }
 
-    #[catch(default)]
+    #[catch(404)]
     fn not_found(req: &Request) -> &'static str {
         eprintln!("404 not foundd: {:?}", req);
         "404"
