@@ -2,10 +2,10 @@ use clipstash::data::AppDatabase;
 use clipstash::web::renderer::Renderer;
 use dotenv::dotenv;
 use std::path::PathBuf;
-
 use structopt::StructOpt;
+
 use rocket::http::Method;
-use rocket_cors::{AllowedOrigins, CorsOptions, Cors};
+use rocket_cors::{AllowedOrigins, CorsOptions};
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "httpd")]

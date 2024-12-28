@@ -27,7 +27,7 @@ crossbeam-channel = "0.5"
 parking_lot = "0.11"
 base64 = "0.13"
 reqwest = { version = "0.11", features = ["blocking", "json", "cookies"] }
-
 strum = { version = "0.21", features = ["derive"] }
+
 openssl = { version = "0.10", features = ["vendored"] }
 rocket_cors="*"
