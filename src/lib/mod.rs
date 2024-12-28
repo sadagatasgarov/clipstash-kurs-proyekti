@@ -25,7 +25,13 @@ pub fn rocket(config: RocketConfig) -> Rocket<Build> {
         .mount("/", web::http::routes())
         .mount("/static", FileServer::from("static"))
         .register("/", web::http::catcher::catchers())
+        .configure(rocket::Config {
+            address: "0.0.0.0".parse().unwrap(),
+            port: 8000,
+            ..Default::default()
+        })
 }
+
 
 
 

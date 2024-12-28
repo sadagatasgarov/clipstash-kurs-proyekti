@@ -16,7 +16,7 @@ fn home(renderer: &State<Renderer<'_>>) -> RawHtml<String> {
     RawHtml(renderer.render(context, &[])) 
 }
 
-// #[rocket::post("/", data="<form>")]
+// #[rocket::post("/", data="<form>")]z
 // pub async fn new_clip(
     
 // )
@@ -57,8 +57,6 @@ fn render_with_status<T: ctx::PageContext + serde::Serialize + Debug>(
 pub fn routes() -> Vec<rocket::Route> {
     rocket::routes![home, get_clip]
 }
-
-
 
 
 pub mod catcher {
