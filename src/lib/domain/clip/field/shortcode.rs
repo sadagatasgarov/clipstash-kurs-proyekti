@@ -2,8 +2,8 @@ use super::super::ClipError;
 use derive_more::From;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-
-#[derive(Debug, Clone, Deserialize, Serialize, From)]
+use rocket::{UriDisplayPath, UriDisplayQuery};
+#[derive(Debug, Clone, Deserialize, Serialize, From, UriDisplayPath, UriDisplayQuery)]
 pub struct ShortCode(String);
 
 impl ShortCode {

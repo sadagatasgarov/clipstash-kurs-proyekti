@@ -1,13 +1,16 @@
 use std::fmt::Debug;
 
 use crate::data::AppDatabase;
-use crate::service::action;
-use crate::web::{ctx, renderer::Renderer, PageError};
+use crate::service::{self, action};
+use crate::web::{ctx, renderer::Renderer, PageError, form};
 use crate::{ServiceError, ShortCode};
 
+
+use rocket::form::{Contextual, Form};
 use rocket::http::Status;
+use rocket::response::Redirect;
 use rocket::response::{content::RawHtml, status};
-use rocket::State;
+use rocket::{uri, State};
 
 
 #[rocket::get("/")]
@@ -16,10 +19,62 @@ fn home(renderer: &State<Renderer<'_>>) -> RawHtml<String> {
     RawHtml(renderer.render(context, &[])) 
 }
 
-// #[rocket::post("/", data="<form>")]z
-// pub async fn new_clip(
-    
-// )
+#[rocket::post("/", data="<form>")]
+pub async fn new_clip(
+    form: Form<Contextual<'_, form::NewClip>>,
+    database: &State<AppDatabase>,
+    renderer: &State<Renderer<'_>>,  )
+    -> Result<Redirect, (Status, RawHtml<String>)> {
+    let form = form.into_inner();
+    if let Some(value) = form.value {
+        let req = service::ask::NewClip{
+            content:value.content,
+            title: value.title,
+            expires: value.expires,
+            password: value.password
+        };
+
+        match action::new_clip(req, database.get_pool()).await {
+            Ok(clip) => Ok(Redirect::to(uri!(get_clip(shortcode = clip.shortcode)))),
+            Err(e) => {
+                eprintln!("internet error: {}", e);
+                Err((
+                    Status::InternalServerError,
+                    RawHtml(renderer.render(
+                        ctx::Home::default(),
+                        &["A server error occured, Please try again"],
+                    )),
+                ))
+            }
+        } 
+    }  else {
+        let errors = form
+            .context
+            .errors()
+            .map(|err| {
+                use rocket::form::error::ErrorKind;
+
+                if let ErrorKind::Validation(msg) = &err.kind {
+                    msg.as_ref()
+                } else {
+                    eprintln!("un handled errors: {}", err);
+                    "An error occured, please try again"
+                }
+            })
+            .collect::<Vec<_>>();
+
+        Err((
+            Status::BadRequest,
+            RawHtml(
+                renderer.render_with_data(
+                    ctx::Home::default(),
+                    ("clip", &form.context),
+                    &errors
+                )
+            ),
+        ))
+    }
+}
 
 
 #[rocket::get("/clip/<shortcode>")]

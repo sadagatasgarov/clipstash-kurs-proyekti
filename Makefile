@@ -1,8 +1,13 @@
 build:
-	cargo build --release
+	@sudo apt-get install -y musl-tools
+	@rustup target add x86_64-unknown-linux-musl
+	@cargo build --release --target x86_64-unknown-linux-musl
 
 run: build
-	./target/release/httpd
+	./target/x86_64-unknown-linux-musl/release/httpd
+
+clear:
+	@cargo clean
 
 docker:
 	@docker build -t sadagatasgarov/myclipstash:0.0.1 .

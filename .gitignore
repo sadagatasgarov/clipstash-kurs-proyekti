@@ -1,3 +1,5 @@
 /target
 *.db*
 Cargo.lock
+vendor/
+/vendor
