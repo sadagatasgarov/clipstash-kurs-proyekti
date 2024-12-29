@@ -12,5 +12,5 @@ pub struct NewClip {
 
 #[derive(Debug, Serialize, FromForm)]
 pub struct GetPasswordProtectedClip {
-    pub password: field::Password
+    pub password: field::Password,
 }

@@ -40,16 +40,11 @@ impl<'a> Renderer<'a> {
         self.do_render(context.template_path(), value)
     }
 
-    pub fn render_with_data<P, D>(
-        &self,
-        context: P,
-        data: (&str, D),
-        errors: &[&str])
-            -> String
+    pub fn render_with_data<P, D>(&self, context: P, data: (&str, D), errors: &[&str]) -> String
     where
         P: ctx::PageContext + serde::Serialize + std::fmt::Debug,
         D: serde::Serialize + std::fmt::Debug,
-    {   
+    {
         use handlebars::to_json;
 
         let mut value = Self::convert_to_value(&context);

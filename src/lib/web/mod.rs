@@ -1,12 +1,12 @@
 pub mod ctx;
-pub mod renderer;
 pub mod form;
 pub mod http;
+pub mod renderer;
 
-pub const PASSWORD_COOKIE: &str="password";
+pub const PASSWORD_COOKIE: &str = "password";
 
 #[derive(rocket::Responder)]
-pub enum PageError{
+pub enum PageError {
     #[response(status = 500)]
     Serialization(String),
     #[response(status = 500)]
@@ -16,7 +16,6 @@ pub enum PageError{
     #[response(status = 500)]
     Internal(String),
 }
-
 
 impl From<handlebars::RenderError> for PageError {
     fn from(err: handlebars::RenderError) -> Self {
@@ -29,4 +28,3 @@ impl From<serde_json::Error> for PageError {
         PageError::Serialization(format!("{}", err))
     }
 }
-

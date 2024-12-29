@@ -12,14 +12,14 @@ use rocket_cors::{AllowedOrigins, CorsOptions};
 struct Opt {
     #[structopt(default_value = "sqlite:data.db")]
     connection_string: String,
-    #[structopt(short, long, parse(from_os_str), default_value="templates/")]
-    template_directory: PathBuf
+    #[structopt(short, long, parse(from_os_str), default_value = "templates/")]
+    template_directory: PathBuf,
 }
 
-fn main(){
+fn main() {
     dotenv().ok();
     let opt = Opt::from_args();
- // CORS seçeneklerini yapılandırıyoruz
+    // CORS seçeneklerini yapılandırıyoruz
     let cors = CorsOptions {
         allowed_origins: AllowedOrigins::all(),
         allowed_methods: vec![Method::Get, Method::Post, Method::Put, Method::Delete]
@@ -33,8 +33,7 @@ fn main(){
     .to_cors()
     .expect("CORS yapılandırması başarısız oldu!");
 
-    let rt = tokio::runtime::Runtime::new()
-        .expect("failed to spawn tokio tuntime");
+    let rt = tokio::runtime::Runtime::new().expect("failed to spawn tokio tuntime");
 
     let _handle = rt.handle().clone();
 
@@ -42,17 +41,12 @@ fn main(){
         let renderer = Renderer::new(opt.template_directory);
         let database = AppDatabase::new(&opt.connection_string).await;
 
-        let config = clipstash::RocketConfig {
-            renderer,
-            database
-        };
+        let config = clipstash::RocketConfig { renderer, database };
 
         clipstash::rocket(config)
-        .attach(cors)
+            .attach(cors)
             .launch()
             .await
             .expect("failed to launch server")
     });
-
-
 }

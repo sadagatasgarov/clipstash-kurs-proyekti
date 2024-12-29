@@ -1,8 +1,8 @@
 use super::super::ClipError;
 use derive_more::From;
+use rocket::{UriDisplayPath, UriDisplayQuery};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use rocket::{UriDisplayPath, UriDisplayQuery};
 #[derive(Debug, Clone, Deserialize, Serialize, From, UriDisplayPath, UriDisplayQuery)]
 pub struct ShortCode(String);
 
@@ -60,7 +60,7 @@ impl FromStr for ShortCode {
 
 use rocket::request::FromParam;
 
-impl<'r> FromParam<'r> for ShortCode  {
+impl<'r> FromParam<'r> for ShortCode {
     type Error = &'r str;
 
     fn from_param(param: &'r str) -> Result<Self, Self::Error> {

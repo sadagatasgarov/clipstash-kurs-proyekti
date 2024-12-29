@@ -1,6 +1,6 @@
 use super::super::ClipError;
-use serde::{Deserialize, Serialize};
 use rocket::form::{self, FromFormField, ValueField};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Content(String);
@@ -25,9 +25,7 @@ impl Content {
 
 #[rocket::async_trait]
 impl<'r> FromFormField<'r> for Content {
-    fn from_value(field:ValueField<'r>) -> form::Result<'r,Self> {
-        Ok(Self::new(field.value)
-        .map_err(|e| form::Error::validation(format!("{}", e)))?)
+    fn from_value(field: ValueField<'r>) -> form::Result<'r, Self> {
+        Ok(Self::new(field.value).map_err(|e| form::Error::validation(format!("{}", e)))?)
     }
 }
-
