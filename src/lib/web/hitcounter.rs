@@ -16,30 +16,29 @@ enum HitCountError {
     #[error("service error: {0}")]
     Service(#[from] ServiceError),
     #[error("Channel Communication error: {0}")]
-    Channel(#[from] crossbeam_channel::SendError<HitCountMsg>)
+    Channel(#[from] crossbeam_channel::SendError<HitCountMsg>),
 }
-
-
 
 enum HitCountMsg {
     Commit,
-    Hit(ShortCode, u32)
+    Hit(ShortCode, u32),
 }
 
 pub struct HitCounter {
-    tx: Sender<HitCountMsg>
+    tx: Sender<HitCountMsg>,
 }
 
 impl HitCounter {
     fn commit_hits(
         hits: HitStore,
         handle: Handle,
-        pool: DatabasePool
+        pool: DatabasePool,
     ) -> Result<(), HitCountError> {
         let hits = Arc::clone(&hits);
         let hits: Vec<(ShortCode, u32)> = {
             let mut hits = hits.lock();
-            let hits_vec: Vec<(ShortCode, u32)> = hits.iter().map(|(k, v)| (k.clone(), *v)).collect();
+            let hits_vec: Vec<(ShortCode, u32)> =
+                hits.iter().map(|(k, v)| (k.clone(), *v)).collect();
             hits.clear();
             hits_vec
         };
@@ -52,14 +51,14 @@ impl HitCounter {
                 }
             }
             Ok(service::action::end_transaction(transaction).await?)
-        }) 
+        })
     }
 
     fn process_msg(
-        msg: HitCountMsg, 
-        hits: HitStore, 
-        handle: Handle, 
-        pool: DatabasePool
+        msg: HitCountMsg,
+        hits: HitStore,
+        handle: Handle,
+        pool: DatabasePool,
     ) -> Result<(), HitCountError> {
         match msg {
             HitCountMsg::Commit => Self::commit_hits(hits.clone(), handle.clone(), pool.clone())?,
@@ -72,36 +71,37 @@ impl HitCounter {
         Ok(())
     }
 
-
     pub fn new(pool: DatabasePool, handle: Handle) -> Self {
         let (tx, rx) = unbounded();
         let tx_clone = tx.clone();
-        let rx_clone= rx.clone();
+        let rx_clone = rx.clone();
         let _ = std::thread::spawn(move || {
             println!("HitCounter thread spawnwd");
             let store = Arc::new(Mutex::new(HashMap::new()));
 
-        loop {
-            match rx_clone.try_recv() {
-              Ok(msg) => if let Err(e) = Self::process_msg(msg, store.clone(), handle.clone(), pool.clone()) {
-                eprintln!("message processing error: {}", e);
-              }
-              Err(e)=> match e {
-                  TryRecvError::Empty => {
-                    std::thread::sleep(Duration::from_secs(5));
-                    if let Err(e) = tx_clone.send(HitCountMsg::Commit) {
-                        eprintln!("error sending commit msg to hits chanell: {}", e)
+            loop {
+                match rx_clone.try_recv() {
+                    Ok(msg) => {
+                        if let Err(e) =
+                            Self::process_msg(msg, store.clone(), handle.clone(), pool.clone())
+                        {
+                            eprintln!("message processing error: {}", e);
+                        }
                     }
-                  }
-                  _ => break,
-              }
+                    Err(e) => match e {
+                        TryRecvError::Empty => {
+                            std::thread::sleep(Duration::from_secs(5));
+                            if let Err(e) = tx_clone.send(HitCountMsg::Commit) {
+                                eprintln!("error sending commit msg to hits chanell: {}", e)
+                            }
+                        }
+                        _ => break,
+                    },
+                }
             }
-        }
+        });
 
-    });
-
-    Self{tx}
-
+        Self { tx }
     }
 
     pub fn hit(&self, shortcode: ShortCode, count: u32) {
@@ -109,5 +109,4 @@ impl HitCounter {
             eprintln!("hit count error: {}", e)
         }
     }
-
 }
