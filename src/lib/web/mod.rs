@@ -3,6 +3,7 @@ pub mod form;
 pub mod http;
 pub mod renderer;
 pub mod hitcounter;
+pub mod api;
 
 pub const PASSWORD_COOKIE: &str = "password";
 
