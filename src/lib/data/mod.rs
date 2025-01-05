@@ -91,7 +91,7 @@ pub mod test {
 
         handle.block_on(async move {
             let db = Database::new(":memory:").await;
-            let migrator = Migrator::new(Path::new("../../../migrations")).await.unwrap();
+            let migrator = Migrator::new(Path::new("./migrations")).await.unwrap();
             let pool = db.get_pool();
             migrator.run(pool).await.unwrap();
             db
