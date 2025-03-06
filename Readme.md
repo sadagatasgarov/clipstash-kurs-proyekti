@@ -13,7 +13,13 @@ CREATE TABLE IF NOT EXISTS api_keys
     api_key BLOB PRIMARY KEY
 );
 
+
+
+apt-get install -y musl-tools
+cargo install sqlx-cli
 sqlx migrate run
+
+make run ile make faylindan is sal
 
 
 cargo run --bin clipclient -- --api-key
@@ -26,3 +32,5 @@ Api Key: 9gGXBE9QcA7CustTyakZRA==
 
 
 cargo run --bin clipclient -- --api-key 9gGXBE9QcA7CustTyakZRA==
+
+
